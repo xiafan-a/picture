@@ -3,6 +3,8 @@ server:
 #  servlet:
 #    context-path: /api
 spring:
+  profiles:
+    active: dev
   application:
     name: yu-picture-backend
   # 数据库配置
@@ -11,6 +13,10 @@ spring:
     url: jdbc:mysql://localhost:3306/picture
     username: root
     password: root
+  servlet:
+    multipart:
+      max-file-size: 10MB
+
 
 # 接口文档配置
 knife4j:
@@ -22,5 +28,25 @@ knife4j:
       default:
         api-rule: package
         api-rule-resources:
-          - com.leikooo.yupicturebackend.controller
+          - com.dy.picture.Controller
+mybatis-plus:
+  configuration:
+    # MyBatis 配置
+    map-underscore-to-camel-case: false
+    # 仅在开发环境打印日志
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  global-config:
+    enable-sql-runner: true
+    db-config:
+      logic-delete-field: isDelete # 全局逻辑删除的实体字段名
+      logic-delete-value: 1 # 逻辑已删除值（默认为 1）
+      logic-not-delete-value: 0 # 逻辑未删除值（默认为 0）
 
+# 对象存储配置（需要从腾讯云获取）
+cos:
+  client:
+    host: ${cos.client.host}
+    secretId: ${cos.client.secretId}
+    secretKey: ${cos.client.secretKey}
+    region: ${cos.client.region}
+    bucket: ${cos.client.bucket}
