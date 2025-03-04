@@ -1,27 +1,39 @@
 package com.dy.picture.Controller;
 
+import cn.hutool.json.JSONUtil;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.dy.picture.annotation.AuthCheck;
 import com.dy.picture.common.BaseResponse;
+import com.dy.picture.common.DeleteRequest;
 import com.dy.picture.common.ResultUtils;
 import com.dy.picture.exception.BusinessException;
 import com.dy.picture.exception.ErrorCode;
+import com.dy.picture.exception.ThrowUtils;
 import com.dy.picture.manager.CosManager;
 import com.dy.picture.model.constant.UserConstant;
+import com.dy.picture.model.dto.picture.PictureEditRequest;
+import com.dy.picture.model.dto.picture.PictureQueryRequest;
+import com.dy.picture.model.dto.picture.PictureUpdateRequest;
 import com.dy.picture.model.dto.picture.PictureUploadRequest;
+import com.dy.picture.model.entity.Picture;
 import com.dy.picture.model.entity.User;
 import com.dy.picture.model.vo.PictureVO;
 import com.dy.picture.service.PictureService;
 import com.dy.picture.service.UserService;
+import com.qcloud.cos.model.COSObject;
+import com.qcloud.cos.model.COSObjectInputStream;
+import com.qcloud.cos.utils.IOUtils;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestPart;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.beans.BeanUtils;
+import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.io.File;
+import java.io.IOException;
+import java.util.Date;
 
 /**
  * @author <a href="https://github.com/lieeew">leikooo</a>
@@ -34,12 +46,6 @@ import java.io.File;
 public class FileController {
     @Resource
     private CosManager cosManager;
-
-    @Resource
-    private PictureService pictureService;
-
-    @Resource
-    private UserService userService;
 
     /**
      * 测试文件上传
@@ -76,19 +82,36 @@ public class FileController {
     }
 
     /**
-     * 上传图片（可重新上传）
+     * 测试文件下载
+     *
+     * @param filepath 文件路径
+     * @param response 响应对象
      */
-    @PostMapping("/upload")
     @AuthCheck(mustRole = UserConstant.ADMIN_ROLE)
-    public BaseResponse<PictureVO> uploadPicture(
-            @RequestPart("file") MultipartFile multipartFile,
-            PictureUploadRequest pictureUploadRequest,
-            HttpServletRequest request) {
-        User loginUser = userService.getLoginUser(request);
-        PictureVO pictureVO = pictureService.uploadPicture(multipartFile, pictureUploadRequest, loginUser);
-        return ResultUtils.success(pictureVO);
-    }
+    @GetMapping("/test/download/")
+    public void testDownloadFile(String filepath, HttpServletResponse response) throws IOException {
+        COSObjectInputStream cosObjectInput = null;
+        try {
+            COSObject cosObject = cosManager.getObject(filepath);
+            cosObjectInput = cosObject.getObjectContent();
+            byte[] bytes = IOUtils.toByteArray(cosObjectInput);
+            // 设置响应头
+            response.setContentType("application/octet-stream;charset=UTF-8");
+            response.setHeader("Content-Disposition", "attachment; filename=" + filepath);
+            // 写入响应
+            response.getOutputStream().write(bytes);
+            response.getOutputStream().flush();
+        } catch (Exception e) {
+            log.error("file download error, filepath = " + filepath, e);
+            throw new BusinessException(ErrorCode.SYSTEM_ERROR, "下载失败");
+        } finally {
+            // 释放流
+            if (cosObjectInput != null) {
+                cosObjectInput.close();
+            }
+        }
 
+    }
 }
 
 

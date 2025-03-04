@@ -6,7 +6,11 @@ import com.baomidou.mybatisplus.annotation.TableId;
 import com.baomidou.mybatisplus.annotation.TableName;
 import java.io.Serializable;
 import java.util.Date;
+
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * 图片
@@ -14,6 +18,9 @@ import lombok.Data;
  */
 @TableName(value ="picture")
 @Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
 public class Picture implements Serializable {
     /**
      * id
@@ -95,6 +102,26 @@ public class Picture implements Serializable {
      * 是否删除
      */
     private Integer isDelete;
+    /**
+     * 状态：0-待审核; 1-通过; 2-拒绝
+     */
+    private Integer reviewStatus;
+
+    /**
+     * 审核信息
+     */
+    private String reviewMessage;
+
+    /**
+     * 审核人 id
+     */
+    private Long reviewerId;
+
+    /**
+     * 审核时间
+     */
+    private Date reviewTime;
+
 
     @TableField(exist = false)
     private static final long serialVersionUID = 1L;

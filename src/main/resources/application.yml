@@ -1,8 +1,18 @@
 server:
   port: 8123
-#  servlet:
-#    context-path: /api
+  servlet:
+    context-path: /api
 spring:
+  redis:
+    database: ${spring.redis.database}
+    host: ${spring.redis.host}
+    port: ${spring.redis.port}
+    timeout: ${spring.redis.timeout}
+    password: ${spring.redis.password}
+
+  servlet:
+    multipart:
+      max-file-size: 10MB
   profiles:
     active: dev
   application:
@@ -13,9 +23,6 @@ spring:
     url: jdbc:mysql://localhost:3306/picture
     username: root
     password: root
-  servlet:
-    multipart:
-      max-file-size: 10MB
 
 
 # 接口文档配置
