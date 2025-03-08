@@ -2,6 +2,7 @@ package com.dy.picture.mapper;
 
 import com.dy.picture.model.entity.Picture;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
+import org.apache.ibatis.annotations.Mapper;
 
 /**
 * @author yong
@@ -9,6 +10,7 @@ import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 * @createDate 2025-03-02 14:17:33
 * @Entity com.dy.picture.model.entity.Picture
 */
+@Mapper
 public interface PictureMapper extends BaseMapper<Picture> {
 
 }

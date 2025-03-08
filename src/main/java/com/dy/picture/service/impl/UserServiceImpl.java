@@ -6,6 +6,8 @@ import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.dy.picture.common.UserRoleEnum;
 import com.dy.picture.exception.BusinessException;
 import com.dy.picture.exception.ErrorCode;
+import com.dy.picture.manager.auth.StpKit;
+import com.dy.picture.model.constant.UserConstant;
 import com.dy.picture.model.dto.user.UserQueryRequest;
 import com.dy.picture.model.vo.UserVO;
 import com.dy.picture.service.UserService;
@@ -108,6 +110,8 @@ public class UserServiceImpl extends ServiceImpl<UserMapper, User>
         }
         // 3. 记录用户的登录态
         request.getSession().setAttribute(USER_LOGIN_STATE, user);
+        StpKit.SPACE.login(user.getId());
+        StpKit.SPACE.getSession().set(UserConstant.USER_LOGIN_STATE, user);
         return this.getLoginUserVO(user);
     }
 

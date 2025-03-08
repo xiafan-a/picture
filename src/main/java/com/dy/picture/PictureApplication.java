@@ -11,7 +11,6 @@ import org.springframework.context.annotation.EnableAspectJAutoProxy;
 @EnableAspectJAutoProxy(exposeProxy = true)
 
 public class PictureApplication {
-    public final Integer a =    null;
     public static void main(String[] args) {
         SpringApplication.run(PictureApplication.class, args);
     }

@@ -121,6 +121,20 @@ public class Picture implements Serializable {
      * 审核时间
      */
     private Date reviewTime;
+    /**
+     * 缩略图 url
+     */
+    private String thumbnailUrl;
+    /**
+     * 空间 id
+     */
+    private Long spaceId;
+    /**
+     * 图片主色调
+     */
+    private String picColor;
+
+
 
 
     @TableField(exist = false)
